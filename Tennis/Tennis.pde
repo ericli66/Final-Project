@@ -11,7 +11,7 @@ import ddf.minim.ugens.*;
 
 // sound variables
 Minim minim;
-AudioPlayer theme, score, gameover, bounce;
+AudioPlayer intro, score, gameover, bounce, firework;
 
 // mode framework
 int mode;
@@ -36,6 +36,7 @@ float ballGravity = 0.12;
 boolean rocketShot = false;
 boolean leftFrozen = false;
 boolean rightFrozen = false;
+boolean AI = false;
 int rocketTimer = 0;
 float rocketVX, rocketVY;
 int startTimer = 90;
@@ -57,7 +58,7 @@ color gray = #335972;
 
 void setup() {
   size(1200, 800);
-  mode = GAME;
+  mode = INTRO;
 
   rectMode(CENTER);
   imageMode(CENTER);
@@ -79,8 +80,8 @@ void setup() {
 
   // minim
   minim = new Minim(this);
-  theme = minim.loadFile("MUSIC.mp3");
-  score = minim.loadFile("SUCCESS.wav");
+  intro = minim.loadFile("INTRO.mp3");
+  firework = minim.loadFile("FIREWORK.mp3");
   gameover = minim.loadFile("FAILURE.wav");
   bounce = minim.loadFile("BOUNCE.wav");
 }

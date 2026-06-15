@@ -1,15 +1,11 @@
 void game() {
+  intro.play();
+
   drawCourt();
 
   if (startTimer > 0) {
     startTimer--;
     movePlayers();
-
-    // allow hit only when timer is basically finished
-    if (startTimer == 0) {
-      racketCollision();
-    }
-
   } else if (rocketTimer > 0) {
     rocketTimer--;
     movePlayers();
@@ -21,7 +17,6 @@ void game() {
       leftFrozen = false;
       rightFrozen = false;
     }
-
   } else {
     movePlayers();
     moveBall();
@@ -119,8 +114,8 @@ void drawLeftPlayer() {
   fill(0);
   noStroke();
   ellipse(leftX - 30, leftY - 30, 55, 18);
-  
-    // red hat
+
+  // red hat
   stroke(0);
   fill(red);
   circle(leftX, leftY - 20, 60);
@@ -139,7 +134,7 @@ void drawLeftPlayer() {
 
   fill(0);
   circle(leftX + 20, leftY - 10, 8);
-  circle(leftX, leftY - 10, 8);  
+  circle(leftX, leftY - 10, 8);
   stroke(0);
   line(leftX - 30, leftY - 20, leftX + 30, leftY - 20);
 
@@ -215,12 +210,16 @@ void moveBall() {
   if (ballY < ballD/2) {
     ballY = ballD/2;
     vy = vy * -0.9;
+    bounce.play();
+    bounce.rewind();
   }
 
   // floor bounce
   if (ballY > 620 - ballD/2) {
     ballY = 620 - ballD/2;
     vy = vy * -1.1;
+    bounce.play();
+    bounce.rewind();
   }
 
   // scoring
@@ -234,8 +233,13 @@ void moveBall() {
     leftScore++;
     resetBall();
   }
-}
 
+  if (leftScore == 3 || rightScore == 3) {
+    gameover.rewind();
+    gameover.play();
+    mode = GAMEOVER;
+  }
+}
 
 
 void drawBall() {
@@ -261,7 +265,7 @@ void racketCollision() {
   float leftRacketX = leftX + 45;
   float leftRacketY = leftY - 45;
 
-  if (dist(leftRacketX-10, leftRacketY, ballX, ballY) <= racketD/2 + ballD/2 + 10) {
+  if (dist(leftRacketX, leftRacketY, ballX, ballY) <= racketD/2 + ballD/2) {
     //rocket shot
     if (ballY > leftRacketY-25 - sweetSpot && ballY < leftRacketY-25 + sweetSpot) {
       rocketShot = true;
@@ -270,10 +274,15 @@ void racketCollision() {
 
       rocketVX = 22;
       rocketVY = 0;
+
+      firework.play();
+      firework.rewind();
     } else {
       // LEFT normal hit
       vx = (ballX - leftRacketX) / 5;
       vy = (ballY - leftRacketY) / 5;
+      bounce.play();
+      bounce.rewind();
 
       if (vx < 6) {
         vx = 6;
@@ -285,7 +294,7 @@ void racketCollision() {
   float rightRacketX = rightX - 45;
   float rightRacketY = rightY - 45;
 
-  if (dist(rightRacketX+10, rightRacketY, ballX, ballY) <= racketD/2 + ballD/2 + 10) {
+  if (dist(rightRacketX, rightRacketY, ballX, ballY) <= racketD/2 + ballD/2) {
     //rocket shot
     if (ballY > rightRacketY-25 - sweetSpot && ballY < rightRacketY-25 + sweetSpot) {
       rocketShot = true;
@@ -294,10 +303,15 @@ void racketCollision() {
 
       rocketVX = -22;
       rocketVY = 0;
+
+      firework.play();
+      firework.rewind();
     } else {
       // RIGHT normal hit
       vx = (ballX - rightRacketX) / 5;
       vy = (ballY - rightRacketY) / 5;
+      bounce.play();
+      bounce.rewind();
 
       if (vx > -6) {
         vx = -6;
