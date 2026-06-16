@@ -1,23 +1,42 @@
 void game() {
-  intro.play();
+  intro.pause();
 
   drawCourt();
 
   if (startTimer > 0) {
+
+    fill(255);
+    textSize(150);
+
+    if (startTimer > 120) {
+      text("3", width/2, height/2);
+    } else if (startTimer > 60) {
+      text("2", width/2, height/2);
+    } else {
+      text("1", width/2, height/2);
+    }
+
     startTimer--;
+      if (startTimer == 0)  {
+    whistle.rewind();
+    whistle.play();
+  }
+  } else if (resetTimer > 0) {
     movePlayers();
+    resetTimer--;
   } else if (rocketTimer > 0) {
     rocketTimer--;
     movePlayers();
 
     if (rocketTimer == 0) {
       vx = rocketVX;
-      vy = rocketVY;
+      vy = 0;
       rocketShot = false;
       leftFrozen = false;
       rightFrozen = false;
     }
   } else {
+    moveBot();
     movePlayers();
     moveBall();
     racketCollision();
@@ -27,7 +46,9 @@ void game() {
   drawBall();
 }
 
+
 void gameClicks() {
+  if (dist(mouseX, mouseY, width/2, height) <= 50) mode = INTRO;
 }
 
 void drawCourt() {
@@ -58,12 +79,26 @@ void drawCourt() {
   line(930, 580, 970, 660);
 
   // score
+  noStroke();
+  fill(white);
+  circle(width/2, 0, 100);
+
   fill(red);
-  textSize(60);
-  text(leftScore, 300, 100);
+  textSize(20);
+  text(leftScore, width/2 - 20, 20);
 
   fill(blue);
-  text(rightScore, 900, 100);
+  text(rightScore, width/2 + 20, 20);
+
+  fill(0);
+  circle(width/2, 20, 10);
+
+  //exit button
+  noStroke();
+  fill(white);
+  circle(width/2, height, 100);
+  fill(0);
+  text("exit", width/2, height - 20);
 }
 
 
@@ -223,20 +258,21 @@ void moveBall() {
   }
 
   // scoring
-
   if (ballX < -300) {
+    whistle.rewind();
+    whistle.play();
     rightScore++;
     resetBall();
   }
 
   if (ballX > width + 300) {
+    whistle.rewind();
+    whistle.play();
     leftScore++;
     resetBall();
   }
 
   if (leftScore == 3 || rightScore == 3) {
-    gameover.rewind();
-    gameover.play();
     mode = GAMEOVER;
   }
 }
@@ -258,70 +294,80 @@ void drawBall() {
 
 
 void racketCollision() {
-  float racketD = 100;
+  float racketD = 70;
   float sweetSpot = 10;
 
-  // LEFT RACKET
-  float leftRacketX = leftX + 45;
-  float leftRacketY = leftY - 45;
+  // LEFT RACKET HEAD
+  float leftRacketX = leftX + 55;
+  float leftRacketY = leftY - 70;
 
   if (dist(leftRacketX, leftRacketY, ballX, ballY) <= racketD/2 + ballD/2) {
-    //rocket shot
-    if (ballY > leftRacketY-25 - sweetSpot && ballY < leftRacketY-25 + sweetSpot) {
+    if (ballY > leftRacketY - sweetSpot && ballY < leftRacketY + sweetSpot) {
       rocketShot = true;
       leftFrozen = true;
       rocketTimer = 25;
-
       rocketVX = 22;
-      rocketVY = 0;
 
-      firework.play();
       firework.rewind();
+      firework.play();
     } else {
-      // LEFT normal hit
-      vx = (ballX - leftRacketX) / 5;
-      vy = (ballY - leftRacketY) / 5;
-      bounce.play();
-      bounce.rewind();
+      vx = (ballX - leftRacketX) / 4;
+      vy = (ballY - leftRacketY) / 4;
 
-      if (vx < 6) {
-        vx = 6;
-      }
+      if (vx < 6) vx = 6;
+
+      bounce.rewind();
+      bounce.play();
     }
   }
 
-  // RIGHT RACKET
-  float rightRacketX = rightX - 45;
-  float rightRacketY = rightY - 45;
+  // LEFT HANDLE
+  if (ballX > leftX + 45 && ballX < leftX + 65 &&
+      ballY > leftY - 60 && ballY < leftY + 20) {
+    vx = 8;
+    vy = (ballY - (leftY - 25)) / 4;
+
+    bounce.rewind();
+    bounce.play();
+  }
+
+  // RIGHT RACKET HEAD
+  float rightRacketX = rightX - 55;
+  float rightRacketY = rightY - 70;
 
   if (dist(rightRacketX, rightRacketY, ballX, ballY) <= racketD/2 + ballD/2) {
-    //rocket shot
-    if (ballY > rightRacketY-25 - sweetSpot && ballY < rightRacketY-25 + sweetSpot) {
+    if (ballY > rightRacketY - sweetSpot && ballY < rightRacketY + sweetSpot) {
       rocketShot = true;
       rightFrozen = true;
       rocketTimer = 25;
-
       rocketVX = -22;
-      rocketVY = 0;
 
-      firework.play();
       firework.rewind();
+      firework.play();
     } else {
-      // RIGHT normal hit
-      vx = (ballX - rightRacketX) / 5;
-      vy = (ballY - rightRacketY) / 5;
-      bounce.play();
-      bounce.rewind();
+      vx = (ballX - rightRacketX) / 4;
+      vy = (ballY - rightRacketY) / 4;
 
-      if (vx > -6) {
-        vx = -6;
-      }
+      if (vx > -6) vx = -6;
+
+      bounce.rewind();
+      bounce.play();
     }
+  }
+
+  // RIGHT HANDLE
+  if (ballX > rightX - 65 && ballX < rightX - 45 &&
+      ballY > rightY - 70 && ballY < rightY + 20) {
+    vx = -8;
+    vy = (ballY - (rightY - 25)) / 4;
+
+    bounce.rewind();
+    bounce.play();
   }
 }
 
 void resetBall() {
-  startTimer = 90;
+  resetTimer = 180;
 
   rocketShot = false;
   rocketTimer = 0;
@@ -332,13 +378,29 @@ void resetBall() {
     // spawn in front of left player
     ballX = 270;
     ballY = 480;
-    vx = 6;
+    vx = 8;
   } else {
     // spawn in front of right player
     ballX = 930;
     ballY = 480;
-    vx = -6;
+    vx = -8;
   }
 
   vy = 0;
+}
+
+
+void moveBot() {
+  // Only bot if AI mode is on
+  if (AI == true) {
+
+    // Bot only jumps when the ball is on the right side
+    if (ballX > width/2) {
+
+      // Bot jumps if ball is above the racket
+      if (ballY < rightY - 80) {
+        rightVY = jumpPower;
+      }
+    }
+  }
 }

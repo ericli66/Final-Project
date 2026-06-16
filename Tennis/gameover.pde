@@ -11,9 +11,18 @@ void gameover() {
     text("BLUE", width/2, height/2-100);
     text("WINS", width/2, height/2+50);
   }
-}
 
-void gameoverClicks() {
-  mode = INTRO;
-  intro.rewind();
+  gameoverTimer--;
+
+  if (gameoverTimer <= 0) {
+    mode = INTRO;
+    intro.rewind();
+    intro.loop();
+
+    leftScore = 0;
+    rightScore = 0;
+
+    startTimer = 180;
+    gameoverTimer = 180; // reset for next game
+  }
 }
