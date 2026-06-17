@@ -43,6 +43,11 @@ int resetTimer = 0;
 int gameoverTimer = 180;
 int rocketTimer = 0;
 
+//cloud variables
+float cloudX;
+float cloudY;
+float cloudSpeed;
+
 // score
 int leftScore, rightScore;
 
@@ -88,6 +93,11 @@ void setup() {
 
   leftScore = 0;
   rightScore = 0;
+  
+  //cloud
+  cloudX = 200;
+  cloudY = 120;
+  cloudSpeed = 1;
 
   // minim music
   minim = new Minim(this);

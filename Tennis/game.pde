@@ -17,10 +17,10 @@ void game() {
     }
 
     startTimer--;
-      if (startTimer == 0)  {
-    whistle.rewind();
-    whistle.play();
-  }
+    if (startTimer == 0) {
+      whistle.rewind();
+      whistle.play();
+    }
   } else if (resetTimer > 0) {
     movePlayers();
     resetTimer--;
@@ -99,6 +99,17 @@ void drawCourt() {
   circle(width/2, height, 100);
   fill(0);
   text("exit", width/2, height - 20);
+
+  //cloud
+  fill(white);
+  circle(cloudX, cloudY -30, 60);
+  circle(cloudX - 50, cloudY, 60);
+  circle(cloudX +50, cloudY, 60);
+  rect(cloudX, cloudY, 100, 60);
+
+  cloudX = cloudX + cloudSpeed;
+
+  if (cloudX >= 800 || cloudX <= 200) cloudSpeed = cloudSpeed * -1;
 }
 
 
@@ -297,9 +308,13 @@ void racketCollision() {
   float racketD = 70;
   float sweetSpot = 10;
 
-  // LEFT RACKET HEAD
+  // left racket head
   float leftRacketX = leftX + 55;
   float leftRacketY = leftY - 70;
+
+  //left rack handle
+  float leftHandleX = leftX + 55;
+  float leftHandleY = leftY;
 
   if (dist(leftRacketX, leftRacketY, ballX, ballY) <= racketD/2 + ballD/2) {
     if (ballY > leftRacketY - sweetSpot && ballY < leftRacketY + sweetSpot) {
@@ -322,18 +337,24 @@ void racketCollision() {
   }
 
   // LEFT HANDLE
-  if (ballX > leftX + 45 && ballX < leftX + 65 &&
-      ballY > leftY - 60 && ballY < leftY + 20) {
-    vx = 8;
-    vy = (ballY - (leftY - 25)) / 4;
+  if (dist(leftHandleX, leftHandleY, ballX, ballY) <= racketD/2 + ballD/2) {
+    vx = (ballX - leftHandleX) / 3;
+    vy = (ballY - leftHandleY) / 3;
+
+    if (vx < 6) vx = 6;
 
     bounce.rewind();
     bounce.play();
   }
 
+
   // RIGHT RACKET HEAD
   float rightRacketX = rightX - 55;
   float rightRacketY = rightY - 70;
+
+  //left rack handle
+  float rightHandleX = rightX - 55;
+  float rightHandleY = rightY;
 
   if (dist(rightRacketX, rightRacketY, ballX, ballY) <= racketD/2 + ballD/2) {
     if (ballY > rightRacketY - sweetSpot && ballY < rightRacketY + sweetSpot) {
@@ -356,10 +377,11 @@ void racketCollision() {
   }
 
   // RIGHT HANDLE
-  if (ballX > rightX - 65 && ballX < rightX - 45 &&
-      ballY > rightY - 70 && ballY < rightY + 20) {
-    vx = -8;
-    vy = (ballY - (rightY - 25)) / 4;
+  if (dist(rightHandleX, rightHandleY, ballX, ballY) <= racketD/2 + ballD/2) {
+    vx = (ballX - rightHandleX) / 4;
+    vy = (ballY - rightHandleY) / 4;
+
+    if (vx > -6) vx = -6;
 
     bounce.rewind();
     bounce.play();
@@ -367,7 +389,7 @@ void racketCollision() {
 }
 
 void resetBall() {
-  resetTimer = 180;
+  resetTimer = 90;
 
   rocketShot = false;
   rocketTimer = 0;
@@ -376,12 +398,12 @@ void resetBall() {
 
   if (random(1) < 0.5) {
     // spawn in front of left player
-    ballX = 270;
+    ballX = 265;
     ballY = 480;
     vx = 8;
   } else {
     // spawn in front of right player
-    ballX = 930;
+    ballX = 935;
     ballY = 480;
     vx = -8;
   }
